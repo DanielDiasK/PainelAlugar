@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Custom styles */
+    body {
+      background-color: #212529;
+      color: #fff;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 250px;
+      background-color: #343a40;
+      padding-top: 20px;
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px;
+      z-index: 1000; /* z-index maior para garantir que o menu fique acima dos outros elementos */
+    }
+    .content {
+      margin-left: 250px;
+      padding: 20px;
+    }
+    .nav-link {
+      color: #fff !important;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+    .nav-link:hover {
+      background-color: #495057 !important;
+    }
+    .active {
+      background-color: #495057 !important;
+    }
+    .card {
+      border-radius: 20px;
+      background-color: #212529;
+      border: 1px solid #343a40;
+    }
+    .total-card {
+      margin-bottom: 20px;
+    }
+    .profile {
+      display: flex;
+      align-items: center;
+      margin-left: 20px; /* Adicionando margem à esquerda */
+      margin-bottom: 20px;
+    }
+    .profile img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .profile p {
+      margin: 0;
+      font-size: 18px;
+    }
+    /* Estilos para dispositivos móveis */
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+      .content {
+        margin-left: 0;
+      }
+      .show-sidebar {
+        display: block !important;
+      }
+      /* Estilos para o botão de fechar o menu */
+      #closeMenuBtn {
+        display: none;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: #fff;
+        font-size: 24px;
+        cursor: pointer;
+      }
+      #closeMenuBtn.show-close {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="profile">
+    <img src="https://via.placeholder.com/150" alt="Profile Picture">
+    <p>Olá, Daniel</p>
+  </div>
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <a class="nav-link active" href="#"><i class="fas fa-chart-line"></i> Dashboard</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#"><i class="fas fa-tachometer-alt"></i> Maquinas</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#"><i class="fas fa-database"></i> Alugadas</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#"><i class="fas fa-cogs"></i> Configurações</a>
+    </li>
+  </ul>
+</div>
+
+<!-- Mobile Menu Button -->
+<button class="btn btn-outline-light d-block d-md-none" id="mobileMenuBtn">
+  <i class="fas fa-bars"></i>
+</button>
+
+<!-- Close Menu Button (only visible when menu is open on mobile) -->
+<i class="fas fa-times" id="closeMenuBtn"></i>
+
+<!-- Page content -->
+<div class="content">
+  <h2>Dashboard</h2>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card total-card">
+        <div class="card-body">
+          <h5 class="card-title">Total de Máquinas</h5>
+          <p class="card-text">100</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card total-card">
+        <div class="card-body">
+          <h5 class="card-title">Máquinas Alugadas</h5>
+          <p class="card-text">20</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Total de Máquinas</h5>
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Máquinas Alugadas</h5>
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS, jQuery and Chart.js -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Mostrar/ocultar menu lateral em dispositivos móveis
+  $('#mobileMenuBtn').click(function() {
+    $('.sidebar').toggleClass('show-sidebar');
+    $('#closeMenuBtn').toggleClass('show-close');
+  });
+
+  // Fechar menu ao clicar no botão "X"
+  $('#closeMenuBtn').click(function() {
+    $('.sidebar').removeClass('show-sidebar');
+    $(this).removeClass('show-close');
+  });
+</script>
+
+<!-- Sample Chart Data and Initialization -->
+<script>
+  // Sample data for charts
+  var barData = {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    datasets: [{
+      label: 'Total de Máquinas',
+      backgroundColor: '#007bff',
+      data: [12, 19, 3, 5, 2, 3]
+    }]
+  };
+
+  var lineData = {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    datasets: [{
+      label: 'Máquinas Alugadas',
+      borderColor: '#28a745',
+      data: [65, 59, 80, 81, 56, 55]
+    }]
+  };
+
+  // Initialize charts
+  var barChart = new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: barData
+  });
+
+  var lineChart = new Chart(document.getElementById('lineChart'), {
+    type: 'line',
+    data: lineData
+  });
+</script>
+
+</body>
+</html>
